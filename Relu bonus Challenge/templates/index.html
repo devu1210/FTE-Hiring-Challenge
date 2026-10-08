@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Disney Cruise Data Explorer | FTE Hiring Challenge</title>
+<style>
+:root{--navy:#172554;--blue:#2563eb;--bg:#f5f7fb;--text:#172033;--muted:#64748b;--line:#e5e7eb;--white:#fff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Arial,sans-serif}
+.wrap{max-width:1600px;margin:auto;padding:24px}
+.hero{background:linear-gradient(135deg,#172554,#1e3a8a);color:white;border-radius:18px;padding:28px 30px;margin-bottom:20px;box-shadow:0 8px 30px #17255422}
+.hero h1{margin:0 0 7px;font-size:30px}.hero p{margin:0;opacity:.9}
+.section-title{margin:22px 0 10px;font-size:19px}
+.cards{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.card{background:white;border-radius:14px;padding:17px;box-shadow:0 2px 10px #0000000c;border:1px solid #edf0f5}
+.label{font-size:13px;color:var(--muted)}.num{font-size:28px;font-weight:800;margin-top:5px}
+.answer-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.answer{background:white;border-radius:14px;padding:16px;border:1px solid #edf0f5;box-shadow:0 2px 10px #0000000c}
+.answer .question{font-size:13px;color:#475569;line-height:1.4;min-height:38px}.answer .value{font-size:26px;font-weight:800;margin-top:7px;color:var(--navy)}
+.filters{background:white;padding:16px;border-radius:14px;margin:20px 0 12px;display:flex;gap:10px;flex-wrap:wrap;box-shadow:0 2px 10px #0000000c}
+.filters input,.filters select,.filters button{padding:11px 12px;border:1px solid #cbd5e1;border-radius:9px;background:white;font-size:14px}
+.filters input{min-width:280px}.filters button{background:var(--navy);color:white;border-color:var(--navy);cursor:pointer;font-weight:600}.reset{padding:11px 10px;color:var(--blue);text-decoration:none}
+.meta{color:var(--muted);font-size:13px;margin:10px 0}
+.tablebox{background:white;border-radius:14px;overflow:auto;box-shadow:0 2px 10px #0000000c;border:1px solid #edf0f5}
+table{border-collapse:collapse;width:100%;font-size:12.5px}th,td{padding:10px 11px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}th{background:#eef2ff;color:#1e293b;position:sticky;top:0;z-index:1}
+tr:hover td{background:#f8fafc}
+.pagination{display:flex;justify-content:center;align-items:center;gap:10px;padding:18px}.pagination a{padding:9px 14px;border:1px solid #cbd5e1;border-radius:9px;text-decoration:none;color:var(--navy);background:white}.pageinfo{font-size:13px;color:var(--muted)}
+.note{margin-top:14px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:12px 14px;color:#1e40af;font-size:13px;line-height:1.5}
+.footer{color:var(--muted);font-size:12px;text-align:center;padding:18px}
+@media(max-width:1100px){.cards{grid-template-columns:repeat(3,1fr)}.answer-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:650px){.wrap{padding:14px}.cards,.answer-grid{grid-template-columns:1fr}.hero h1{font-size:24px}.filters input{min-width:100%}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="hero">
+  <h1>Disney Cruise Data Explorer</h1>
+  <p>FTE Hiring Challenge — cleaned sailing dataset, analysis and challenge answers</p>
+</div>
+
+<h2 class="section-title">Dataset Overview</h2>
+<div class="cards">
+  <div class="card"><div class="label">Total Cruises</div><div class="num">{{stats.total}}</div></div>
+  <div class="card"><div class="label">Available Records</div><div class="num">{{stats.available}}</div></div>
+  <div class="card"><div class="label">Holiday Cruises</div><div class="num">{{stats.holiday}}</div></div>
+  <div class="card"><div class="label">Destinations</div><div class="num">{{stats.destinations}}</div></div>
+  <div class="card"><div class="label">Ships</div><div class="num">{{stats.ships}}</div></div>
+</div>
+
+<h2 class="section-title">Challenge Answers</h2>
+<div class="answer-grid">
+  <div class="answer"><div class="question">How many total cruises are there for the Pacific as a destination?</div><div class="value">{{answers.pacific_cruises}}</div></div>
+  <div class="answer"><div class="question">How many total cruises are there?</div><div class="value">{{answers.total_cruises}}</div></div>
+  <div class="answer"><div class="question">How many holiday cruises are there?</div><div class="value">{{answers.holiday_cruises}}</div></div>
+  <div class="answer"><div class="question">How many cruises offer more than 2 dates for booking?</div><div class="value">{{answers.more_than_2_booking_dates}}</div></div>
+  <div class="answer"><div class="question">Miami departure-port cruises</div><div class="value">{{answers.miami_departures}}</div></div>
+  <div class="answer"><div class="question">London departure-port cruises</div><div class="value">{{answers.london_departures}}</div></div>
+</div>
+
+<div class="note">
+  The Challenge Answers section contains the final values from the completed Disney analysis. The table below displays the cleaned scraped sailing records used by the application.
+</div>
+
+<form class="filters" method="get">
+  <input name="q" value="{{q}}" placeholder="Search ship, port, sailing ID...">
+  <select name="destination"><option value="">All destinations</option>{% for x in destinations %}<option value="{{x}}" {% if x==destination %}selected{% endif %}>{{x}}</option>{% endfor %}</select>
+  <select name="ship"><option value="">All ships</option>{% for x in ships %}<option value="{{x}}" {% if x==ship %}selected{% endif %}>{{x}}</option>{% endfor %}</select>
+  {% if 'holiday_cruise' in columns %}
+  <select name="holiday"><option value="">Holiday: All</option><option value="True" {% if holiday=='True' %}selected{% endif %}>Holiday</option><option value="False" {% if holiday=='False' %}selected{% endif %}>Non-Holiday</option></select>
+  {% endif %}
+  <button type="submit">Filter</button>
+  <a class="reset" href="/">Reset</a>
+</form>
+
+<div class="meta">Showing {{rows|length}} of {{total}} matching records · Page {{page}} of {{pages}}</div>
+
+<div class="tablebox">
+<table>
+<thead><tr>{% for c in columns %}<th>{{c}}</th>{% endfor %}</tr></thead>
+<tbody>
+{% for row in rows %}
+<tr>{% for c in columns %}<td>{{row[c]}}</td>{% endfor %}</tr>
+{% else %}
+<tr><td colspan="{{columns|length}}" style="text-align:center;padding:30px;color:#64748b">No matching records found.</td></tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+
+<div class="pagination">
+{% if page>1 %}<a href="?q={{q|urlencode}}&destination={{destination|urlencode}}&ship={{ship|urlencode}}&holiday={{holiday|urlencode}}&page={{page-1}}">Previous</a>{% endif %}
+<span class="pageinfo">Page {{page}} / {{pages}}</span>
+{% if page<pages %}<a href="?q={{q|urlencode}}&destination={{destination|urlencode}}&ship={{ship|urlencode}}&holiday={{holiday|urlencode}}&page={{page+1}}">Next</a>{% endif %}
+</div>
+
+<div class="footer">Disney Cruise Data Explorer · FTE Hiring Challenge Bonus</div>
+</div>
+</body>
+</html>
